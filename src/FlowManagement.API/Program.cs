@@ -3,6 +3,10 @@ using FlowManagement.Infrastructure.Services;
 using FlowManagement.Infrastructure.Data;
 using DotNetEnv;
 using MongoDB.Driver;
+using FlowManagement.Core.Interfaces;
+using FlowManagement.Infrastructure.Repositories;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,10 +39,12 @@ if (!string.IsNullOrEmpty(mongoConnectionString) &&
 });
 }
 
-
 builder.Services.AddSingleton<MongoDbContext>();
 
 builder.Services.AddScoped<MongoHealthService>();
+
+builder.Services.AddScoped<IFlowRepository, FlowRepository>();
+builder.Services.AddScoped<IFlowService, FlowService>();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -51,6 +57,7 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
+BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
 
 var app = builder.Build();
 
