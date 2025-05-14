@@ -5,33 +5,28 @@ using MongoDB.Driver;
 
 namespace FlowManagement.Infrastructure.Repositories;
 
-public class FlowRepository : BaseRepository<Flow>, IFlowRepository
+public class FlowRepository(MongoDbContext context) : BaseRepository<Flow>(context.Flows), IFlowRepository
 {
-  private readonly IMongoCollection<Flow> _flowCollection;
-  private readonly IMongoCollection<Step> _stepCollection;
+  private readonly IMongoCollection<Flow> _flowCollection = context.Flows;
+  private readonly IMongoCollection<Step> _stepCollection = context.Steps;
 
-  public FlowRepository(MongoDbContext context)
-      : base(context.Flows)
+  public async Task<IEnumerable<Step>> GetStepsByFlowAsync(Guid flowId)
   {
-    _flowCollection = context.Flows;
-    _stepCollection = context.Steps;
-  }
+    var flow = await _collection
+        .Find(f => f.Id == flowId)
+        .FirstOrDefaultAsync();
 
-  public async Task<Flow> GetFlowWithStepsAsync(Guid flowId)
-  {
-    var flow = await _flowCollection.Find(f => f.Id == flowId).FirstOrDefaultAsync();
-    if (flow != null)
-    {
-      flow.Steps = await _stepCollection.Find(s => s.FlowId == flowId)
-                                      .ToListAsync();
-    }
-    return flow ?? throw new Exception("Flow not found");
+    return flow?.Steps ?? Enumerable.Empty<Step>();
   }
 
   public async Task AddStepToFlowAsync(Guid flowId, Step step)
   {
-    step.FlowId = flowId;
-    await _stepCollection.InsertOneAsync(step);
+    step.Id = Guid.NewGuid(); // Generamos nuevo ID para el step
+
+    var filter = Builders<Flow>.Filter.Eq(f => f.Id, flowId);
+    var update = Builders<Flow>.Update.Push(f => f.Steps, step);
+
+    await _collection.UpdateOneAsync(filter, update);
   }
 
   public async Task<bool> FlowExistsAsync(Guid flowId)

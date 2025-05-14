@@ -7,16 +7,10 @@ namespace FlowManagement.API.Controllers;
 
 [ApiController]
 [Route("api/flows")]
-public class FlowController : ControllerBase
+public class FlowController(IFlowService flowService, ILogger<FlowController> logger) : ControllerBase
 {
-  private readonly IFlowService _flowService;
-  private readonly ILogger<FlowController> _logger;
-
-  public FlowController(IFlowService flowService, ILogger<FlowController> logger)
-  {
-    _flowService = flowService;
-    _logger = logger;
-  }
+  private readonly IFlowService _flowService = flowService;
+  private readonly ILogger<FlowController> _logger = logger;
 
   [HttpGet]
   public async Task<IActionResult> GetFlows()
@@ -26,6 +20,17 @@ public class FlowController : ControllerBase
     _logger.LogInformation($"Flow list: {flows.Count}");
 
     return (flows != null) ? Ok(flows) : NotFound();
+  }
+
+
+  [HttpGet("{flowId}")]
+  public async Task<IActionResult> GetFlowById(Guid flowId)
+  {
+    var flow = await _flowService.GetFlowByIdAsync(flowId);
+
+    _logger.LogInformation($"Flow with steps list: {flow.Steps.Count}");
+
+    return (flow != null) ? Ok(flow) : NotFound();
   }
 
   [HttpPost]
@@ -46,4 +51,26 @@ public class FlowController : ControllerBase
     return CreatedAtAction(nameof(GetFlows), new { flow.Id }, flow);
   }
 
+  [HttpPost("{flowId}/steps")]
+  [ProducesResponseType(typeof(Step), 201)]
+  public async Task<IActionResult> AddStepToFlow(Guid flowId, [FromBody] CreateStepDto stepDto)
+  {
+    var step = new Step
+    {
+      Code = stepDto.Code,
+      Name = stepDto.Name,
+      Description = stepDto.Description ?? string.Empty,
+      Order = stepDto.Order,
+      IsParallel = stepDto.IsParallel,
+      ActionType = stepDto.ActionType,
+      CreatedAt = DateTime.UtcNow
+    };
+
+    var createdStep = await _flowService.AddStepToFlowAsync(flowId, step);
+
+    return CreatedAtAction(
+        nameof(GetFlowById),
+        new { flowId },
+        createdStep);
+  }
 }
