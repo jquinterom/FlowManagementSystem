@@ -1,0 +1,96 @@
+using Microsoft.Extensions.Options;
+using FlowManagement.Infrastructure.Services;
+using FlowManagement.Infrastructure.Data;
+using DotNetEnv;
+using MongoDB.Driver;
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddControllers();
+
+Env.Load();
+
+// Add services to the container.
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+
+var mongoConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? "";
+var mongoDatabaseName = Environment.GetEnvironmentVariable("MONGO_DATABASE_NAME") ?? "";
+
+
+if (!string.IsNullOrEmpty(mongoConnectionString) &&
+    !string.IsNullOrEmpty(mongoDatabaseName))
+{
+  builder.Services.Configure<MongoDbSettings>(options =>
+    {
+      options.ConnectionString = mongoConnectionString;
+      options.DatabaseName = mongoDatabaseName;
+    });
+
+  builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+  var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+  return new MongoClient(settings.ConnectionString);
+});
+}
+
+
+builder.Services.AddSingleton<MongoDbContext>();
+
+builder.Services.AddScoped<MongoHealthService>();
+
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(c =>
+{
+  c.SwaggerDoc("v1", new()
+  {
+    Title = builder.Environment.ApplicationName,
+    Version = "v1"
+  });
+});
+
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+  app.MapOpenApi();
+  app.UseDeveloperExceptionPage();
+  app.UseSwagger();
+  app.UseSwaggerUI(c =>
+  {
+    c.ConfigObject.DisplayRequestDuration = true;
+  });
+}
+
+app.UseHttpsRedirection();
+app.MapControllers();
+
+var summaries = new[]
+{
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+};
+
+app.MapGet("/weatherforecast", () =>
+{
+  var forecast = Enumerable.Range(1, 5).Select(index =>
+      new WeatherForecast
+      (
+          DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+          Random.Shared.Next(-20, 55),
+          summaries[Random.Shared.Next(summaries.Length)]
+      ))
+      .ToArray();
+  return forecast;
+})
+.WithName("GetWeatherForecast");
+
+app.Run();
+
+record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+  public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
