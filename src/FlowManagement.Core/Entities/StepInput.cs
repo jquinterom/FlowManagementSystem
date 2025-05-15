@@ -1,4 +1,5 @@
 namespace FlowManagement.Core.Entities;
+
 public class StepInput
 {
   public Guid StepId { get; set; }
