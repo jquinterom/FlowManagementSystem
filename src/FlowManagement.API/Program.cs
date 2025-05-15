@@ -7,6 +7,7 @@ using FlowManagement.Core.Interfaces;
 using FlowManagement.Infrastructure.Repositories;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using FlowManagement.Infrastructure.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,8 +42,6 @@ if (!string.IsNullOrEmpty(mongoConnectionString) &&
 
 builder.Services.AddSingleton<MongoDbContext>();
 
-builder.Services.AddScoped<MongoHealthService>();
-
 // Repositories
 builder.Services.AddScoped<IFlowRepository, FlowRepository>();
 builder.Services.AddScoped<IStepRepository, StepRepository>();
@@ -53,7 +52,7 @@ builder.Services.AddScoped<IFlowExecutionRepository, FlowExecutionRepository>();
 builder.Services.AddScoped<IFlowService, FlowService>();
 builder.Services.AddScoped<IStepService, StepService>();
 builder.Services.AddScoped<IFieldService, FieldService>();
-builder.Services.AddScoped<FlowExecutionService>();
+builder.Services.AddScoped<IFlowExecutionService, FlowExecutionService>();
 
 builder.Services.AddEndpointsApiExplorer();
 

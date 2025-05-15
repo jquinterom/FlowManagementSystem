@@ -1,6 +1,6 @@
 using FlowManagement.API.Models;
 using FlowManagement.Core.Entities;
-using FlowManagement.Infrastructure.Services;
+using FlowManagement.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlowManagement.API.Controllers;

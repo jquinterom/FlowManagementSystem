@@ -1,13 +1,13 @@
-using FlowManagement.Infrastructure.Services;
+using FlowManagement.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlowManagement.API.Controllers;
 
 [ApiController]
 [Route("api/flows/{flowId}/execute")]
-public class FlowExecutionController(FlowExecutionService executionService, ILogger<FlowExecutionController> logger) : ControllerBase
+public class FlowExecutionController(IFlowExecutionService executionService, ILogger<FlowExecutionController> logger) : ControllerBase
 {
-  private readonly FlowExecutionService _executionService = executionService;
+  private readonly IFlowExecutionService _executionService = executionService;
   private readonly ILogger _logger = logger;
 
   [HttpPost]

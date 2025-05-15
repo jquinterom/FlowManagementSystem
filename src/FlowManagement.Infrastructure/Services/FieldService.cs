@@ -1,5 +1,6 @@
 using FlowManagement.Core.Entities;
 using FlowManagement.Core.Interfaces;
+using FlowManagement.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FlowManagement.Infrastructure.Services;

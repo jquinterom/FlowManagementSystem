@@ -1,6 +1,7 @@
 using FlowManagement.Core.Entities;
 using FlowManagement.Core.Interfaces;
 using FlowManagement.Infrastructure.Repositories;
+using FlowManagement.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
@@ -10,7 +11,7 @@ public class FlowExecutionService(
     IFlowRepository flowRepository,
     IFieldRepository fieldRepository,
     ILogger<FlowExecutionService> logger,
-    IFlowExecutionRepository executionRepository)
+    IFlowExecutionRepository executionRepository) : IFlowExecutionService
 {
   private readonly IFlowRepository _flowRepository = flowRepository;
   private readonly IFieldRepository _fieldRepository = fieldRepository;
@@ -104,7 +105,7 @@ public class FlowExecutionService(
         .Where(i => i.IsRequired && !context.CurrentInputs.ContainsKey(i.Field.Code))
         .ToList();
 
-    if (missingInputs.Any())
+    if (missingInputs.Count != 0)
     {
       throw new InvalidOperationException(
           $"It is missing required inputs: {string.Join(", ", missingInputs.Select(i => i.Field.Code))}");
