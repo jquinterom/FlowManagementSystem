@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using FlowManagement.Core.Entities;
 using FlowManagement.Core.Interfaces;
 using FlowManagement.Infrastructure.Data;
@@ -14,8 +15,8 @@ public class FieldRepository(MongoDbContext context) : BaseRepository<Field>(con
     return await _fieldCollection.Find(f => f.Code == code).FirstOrDefaultAsync();
   }
 
-  public async Task<IEnumerable<Field>> GetFieldsByDataTypeAsync(string dataType)
+  public async Task<bool> AnyAsync(Expression<Func<Field, bool>> predicate)
   {
-    return await _fieldCollection.Find(f => f.DataType == dataType).ToListAsync();
+    return await _fieldCollection.Find(predicate).AnyAsync();
   }
 }

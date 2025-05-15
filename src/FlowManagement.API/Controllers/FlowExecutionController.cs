@@ -21,6 +21,15 @@ public class FlowExecutionController(IFlowExecutionService executionService, ILo
       var executionId = await _executionService.ExecuteFlowAsync(flowId, request.Inputs);
       return Ok(new ExecutionResponse(executionId, "Execution started successfully"));
     }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("not registered"))
+    {
+      return BadRequest(new
+      {
+        Error = "Fields not registered",
+        Details = ex.Message,
+        Solution = "Register the fields using the api POST /api/fields"
+      });
+    }
     catch (KeyNotFoundException ex)
     {
       _logger.LogWarning(ex, "Flow not found: {FlowId}", flowId);

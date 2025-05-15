@@ -20,6 +20,8 @@ public class FlowExecutionService(
 
   public async Task<Guid> ExecuteFlowAsync(Guid flowId, Dictionary<string, object> inputs)
   {
+    await ValidateInputFieldsAsync(inputs.Keys);
+
     var execution = await _executionRepository.StartExecutionAsync(flowId);
     var context = new ExecutionContext(execution.ExecutionId) { CurrentInputs = inputs };
 
@@ -171,6 +173,29 @@ public class FlowExecutionService(
       ["sentAt"] = DateTime.UtcNow
     };
   }
+
+  private async Task ValidateInputFieldsAsync(IEnumerable<string> fieldCodes)
+  {
+    var invalidFields = new List<string>();
+
+    foreach (var code in fieldCodes)
+    {
+      var fieldExists = await _fieldRepository.AnyAsync(f => f.Code == code);
+      if (!fieldExists)
+      {
+        invalidFields.Add(code);
+      }
+    }
+
+    if (invalidFields.Count != 0)
+    {
+      throw new InvalidOperationException(
+          $"The following fields are not registered: {string.Join(", ", invalidFields)}. " +
+          "Please register them before executing the flow.");
+    }
+  }
+
+
 }
 
 public class ExecutionContext(Guid executionId)
