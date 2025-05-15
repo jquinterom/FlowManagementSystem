@@ -19,4 +19,5 @@ public class MongoDbContext
   public IMongoCollection<Field> Fields => _database.GetCollection<Field>("fields");
   public IMongoCollection<StepInput> StepInputs => _database.GetCollection<StepInput>("stepInputs");
   public IMongoCollection<StepOutput> StepOutputs => _database.GetCollection<StepOutput>("stepOutputs");
+  public IMongoCollection<FlowExecution> FlowExecutions => _database.GetCollection<FlowExecution>("flowExecutions");
 }

@@ -15,6 +15,21 @@ public class Step
   public ICollection<StepInput> Inputs { get; set; } = new List<StepInput>();
   public ICollection<StepOutput> Outputs { get; set; } = new List<StepOutput>();
   public bool IsParallel { get; set; } // Indica si puede ejecutarse en paralelo
-  public string ActionType { get; set; } // Tipo de acción que realiza el paso
+  public ActionType ActionType { get; set; } // Tipo de acción que realiza el paso
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+  public List<StepDependency> Dependencies { get; set; } = new();
+}
+
+public class StepDependency
+{
+  public Guid StepId { get; set; }  // Paso del que depende
+  public string RequiredOutput { get; set; }  // Campo output requerido
+}
+
+
+public enum ActionType
+{
+  DocumentValidation,
+  EmailNotification,
 }

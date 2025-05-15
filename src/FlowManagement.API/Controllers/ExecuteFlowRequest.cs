@@ -1,0 +1,1 @@
+public record ExecuteFlowRequest(Dictionary<string, object> Inputs);

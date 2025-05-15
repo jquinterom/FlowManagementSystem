@@ -47,11 +47,13 @@ builder.Services.AddScoped<MongoHealthService>();
 builder.Services.AddScoped<IFlowRepository, FlowRepository>();
 builder.Services.AddScoped<IStepRepository, StepRepository>();
 builder.Services.AddScoped<IFieldRepository, FieldRepository>();
+builder.Services.AddScoped<IFlowExecutionRepository, FlowExecutionRepository>();
 
 // Services
 builder.Services.AddScoped<IFlowService, FlowService>();
 builder.Services.AddScoped<IStepService, StepService>();
 builder.Services.AddScoped<IFieldService, FieldService>();
+builder.Services.AddScoped<FlowExecutionService>();
 
 builder.Services.AddEndpointsApiExplorer();
 

@@ -1,0 +1,1 @@
+public record ExecutionResponse(Guid ExecutionId, string Message);

@@ -1,3 +1,5 @@
+using FlowManagement.Core.Entities;
+
 namespace FlowManagement.API.Models;
 
 public class CreateStepDto
@@ -12,5 +14,5 @@ public class CreateStepDto
 
   public bool IsParallel { get; set; }
 
-  public string ActionType { get; set; }
+  public ActionType ActionType { get; set; }
 }
