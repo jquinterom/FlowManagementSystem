@@ -38,11 +38,11 @@ public class FlowExecutionService(
 
       foreach (var group in stepsGrouped)
       {
-        if (group.Any(s => s.IsParallel))
+        if (group.Any(stepGroup => stepGroup.IsParallel))
         {
           var parallelTasks = group
-              .Where(s => s.IsParallel)
-              .Select(s => ExecuteStepWithTrackingAsync(s, context));
+              .Where(stepGroup => stepGroup.IsParallel)
+              .Select(stepGroup => ExecuteStepWithTrackingAsync(stepGroup, context));
           await Task.WhenAll(parallelTasks);
         }
         else
