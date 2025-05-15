@@ -10,11 +10,13 @@ namespace FlowManagement.Infrastructure.Services;
 public class FlowExecutionService(
     IFlowRepository flowRepository,
     IFieldRepository fieldRepository,
+    IStepRepository stepRepository,
     ILogger<FlowExecutionService> logger,
     IFlowExecutionRepository executionRepository) : IFlowExecutionService
 {
   private readonly IFlowRepository _flowRepository = flowRepository;
   private readonly IFieldRepository _fieldRepository = fieldRepository;
+  private readonly IStepRepository _stepRepository = stepRepository;
   private readonly ILogger<FlowExecutionService> _logger = logger;
   private readonly IFlowExecutionRepository _executionRepository = executionRepository;
 
@@ -28,7 +30,11 @@ public class FlowExecutionService(
     try
     {
       var flow = await _flowRepository.GetByIdAsync(flowId);
-      var stepsGrouped = flow.Steps.GroupBy(s => s.Order).OrderBy(g => g.Key);
+      var stepCodes = flow.Steps.ToArray();
+
+      IEnumerable<Step>? steps = await _stepRepository.GetStepsByCodeAsync(stepCodes) ?? throw new InvalidOperationException($"The steps do not exist in the flow {flowId}");
+
+      var stepsGrouped = steps.GroupBy(s => s.Order).OrderBy(g => g.Key);
 
       foreach (var group in stepsGrouped)
       {

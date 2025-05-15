@@ -14,6 +14,15 @@ public class StepRepository(MongoDbContext context) : BaseRepository<Step>(conte
     throw new NotImplementedException();
   }
 
+  public async Task<IEnumerable<Step>?> GetStepsByCodeAsync(string[] stepCodes)
+  {
+    var filter = Builders<Step>.Filter.In(s => s.Code, stepCodes);
+    var steps = await _stepCollection.Find(filter).ToListAsync();
+
+    if (steps == null) return null;
+    return [.. steps];
+  }
+
   public Task<List<Step>> GetStepsAsync()
   {
     throw new NotImplementedException();

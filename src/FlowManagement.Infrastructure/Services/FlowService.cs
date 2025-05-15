@@ -23,30 +23,65 @@ namespace FlowManagement.Infrastructure.Services
       _logger.LogInformation($"Flow created with id {flow.Id}");
     }
 
-    public async Task<Step> AddStepToFlowAsync(Guid flowId, Step step)
+    public async Task<IEnumerable<Step>> AddStepsToFlowAsync(Guid flowId, string[] stepCodes)
     {
-      // Validación de orden duplicado
-      var existingSteps = await _flowRepository.GetStepsByFlowAsync(flowId);
-      if (existingSteps.Any(s => s.Order == step.Order))
+      IEnumerable<Step>? steps = await _stepRepository.GetStepsByCodeAsync(stepCodes) ?? throw new InvalidOperationException("The steps do not exist");
+
+      var notExistsSteps = ValidateStepsDoesNotExists(stepCodes, [.. steps]);
+
+      if (notExistsSteps != null)
       {
-        throw new InvalidOperationException($"Ya existe un paso con orden {step.Order}");
+        throw new InvalidOperationException($"The following steps do not exist: {string.Join(", ", notExistsSteps)}");
       }
 
-      await _flowRepository.AddStepToFlowAsync(flowId, step);
+      // Exists steps by flow
+      var existingStepsByFlowId = await _flowRepository.GetStepsByFlowAsync(flowId);
 
-      return step;
+      if (existingStepsByFlowId != null)
+      {
+        foreach (var step in existingStepsByFlowId)
+        {
+          if (steps.Any(s => s.Code == step))
+          {
+            throw new InvalidOperationException($"This step already exists: {step}");
+          }
+        }
+      }
+
+      foreach (var step in stepCodes)
+      {
+        await _flowRepository.AddStepToFlowAsync(flowId, step);
+      }
+
+      return steps;
     }
-
 
     public async Task<Flow> GetFlowByIdAsync(Guid flowId)
     {
       var flow = await _flowRepository.GetByIdAsync(flowId);
-      if (flow != null)
-      {
-        flow.Steps = [.. flow.Steps.OrderBy(s => s.Order)];
-      }
 
       return flow ?? throw new Exception("Flow not found");
+    }
+
+    public static string[]? ValidateStepsDoesNotExists(string[] stepCodes, Step[] steps)
+    {
+      List<string> notExistsSteps = [];
+
+      foreach (var stepCode in stepCodes)
+      {
+        var step = steps.FirstOrDefault(s => s.Code == stepCode);
+        if (step == null)
+        {
+          notExistsSteps.Add(stepCode);
+        }
+      }
+
+      if (notExistsSteps.Count != 0)
+      {
+        return [.. notExistsSteps];
+      }
+
+      return null;
     }
   }
 }

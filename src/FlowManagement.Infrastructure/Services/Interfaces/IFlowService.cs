@@ -7,6 +7,6 @@ namespace FlowManagement.Infrastructure.Services.Interfaces
     Task<List<Flow>> GetFlowAsync();
     Task CreateFlowAsync(Flow flow);
     Task<Flow> GetFlowByIdAsync(Guid flowId);
-    Task<Step> AddStepToFlowAsync(Guid flowId, Step step);
+    Task<IEnumerable<Step>> AddStepsToFlowAsync(Guid flowId, string[] stepCodes);
   }
 }

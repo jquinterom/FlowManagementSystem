@@ -53,24 +53,19 @@ public class FlowController(IFlowService flowService, ILogger<FlowController> lo
 
   [HttpPost("{flowId}/steps")]
   [ProducesResponseType(typeof(Step), 201)]
-  public async Task<IActionResult> AddStepToFlow(Guid flowId, [FromBody] CreateStepDto stepDto)
+  public async Task<IActionResult> AddStepToFlow(Guid flowId, [FromBody] string[] stepCodes)
   {
-    var step = new Step
+    try
     {
-      Code = stepDto.Code,
-      Name = stepDto.Name,
-      Description = stepDto.Description ?? string.Empty,
-      Order = stepDto.Order,
-      IsParallel = stepDto.IsParallel,
-      ActionType = stepDto.ActionType,
-      CreatedAt = DateTime.UtcNow
-    };
-
-    var createdStep = await _flowService.AddStepToFlowAsync(flowId, step);
-
-    return CreatedAtAction(
-        nameof(GetFlowById),
-        new { flowId },
-        createdStep);
+      var createdStep = await _flowService.AddStepsToFlowAsync(flowId, stepCodes);
+      return CreatedAtAction(
+          nameof(GetFlowById),
+          new { flowId },
+          createdStep);
+    }
+    catch (InvalidOperationException ex)
+    {
+      return BadRequest(ex.Message);
+    }
   }
 }

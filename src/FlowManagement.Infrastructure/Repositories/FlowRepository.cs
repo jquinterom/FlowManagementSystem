@@ -10,19 +10,17 @@ public class FlowRepository(MongoDbContext context) : BaseRepository<Flow>(conte
   private readonly IMongoCollection<Flow> _flowCollection = context.Flows;
   private readonly IMongoCollection<Step> _stepCollection = context.Steps;
 
-  public async Task<IEnumerable<Step>> GetStepsByFlowAsync(Guid flowId)
+  public async Task<IEnumerable<string>> GetStepsByFlowAsync(Guid flowId)
   {
     var flow = await _collection
         .Find(f => f.Id == flowId)
         .FirstOrDefaultAsync();
 
-    return flow?.Steps ?? Enumerable.Empty<Step>();
+    return flow?.Steps ?? Enumerable.Empty<string>();
   }
 
-  public async Task AddStepToFlowAsync(Guid flowId, Step step)
+  public async Task AddStepToFlowAsync(Guid flowId, string step)
   {
-    step.Id = Guid.NewGuid(); // Generamos nuevo ID para el step
-
     var filter = Builders<Flow>.Filter.Eq(f => f.Id, flowId);
     var update = Builders<Flow>.Update.Push(f => f.Steps, step);
 
