@@ -3,6 +3,7 @@ namespace FlowManagement.Core.Entities;
 
 public class FlowExecution
 {
+  public Guid Id { get; set; } = Guid.NewGuid();
   public Guid ExecutionId { get; set; } = Guid.NewGuid();
 
   public Guid FlowId { get; set; }

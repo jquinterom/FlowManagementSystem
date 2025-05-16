@@ -3,14 +3,9 @@ using MongoDB.Driver;
 
 namespace FlowManagement.Infrastructure.Repositories;
 
-public abstract class BaseRepository<T> : IRepository<T> where T : class
+public abstract class BaseRepository<T>(IMongoCollection<T> collection) : IRepository<T> where T : class
 {
-  protected readonly IMongoCollection<T> _collection;
-
-  protected BaseRepository(IMongoCollection<T> collection)
-  {
-    _collection = collection;
-  }
+  protected readonly IMongoCollection<T> _collection = collection;
 
   public async Task<T> GetByIdAsync(Guid id)
   {

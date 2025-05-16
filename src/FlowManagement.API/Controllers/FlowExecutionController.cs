@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlowManagement.API.Controllers;
 
 [ApiController]
-[Route("api/flows/{flowId}/execute")]
+[Route("api/flows/execute/")]
 public class FlowExecutionController(IFlowExecutionService executionService, ILogger<FlowExecutionController> logger) : ControllerBase
 {
   private readonly IFlowExecutionService _executionService = executionService;
   private readonly ILogger _logger = logger;
 
-  [HttpPost]
+  [HttpPost("{flowId}")]
   [ProducesResponseType(typeof(ExecutionResponse), 200)]
   [ProducesResponseType(400)]
   [ProducesResponseType(404)]
@@ -44,6 +44,22 @@ public class FlowExecutionController(IFlowExecutionService executionService, ILo
     {
       _logger.LogError(ex, "Error executing flow: {FlowId}", flowId);
       return StatusCode(500, "Server error");
+    }
+  }
+
+  [HttpGet("{executionId}")]
+  [ProducesResponseType(typeof(ExecutionResponse), 200)]
+  public async Task<IActionResult> GetExecution(Guid executionId)
+  {
+    try
+    {
+      var execution = await _executionService.GetExecutionByIdAsync(executionId);
+      return Ok(new ExecutionResponse(execution.ExecutionId, execution.Status.ToString()));
+    }
+    catch (KeyNotFoundException ex)
+    {
+      _logger.LogWarning(ex, "Execution not found: {ExecutionId}", executionId);
+      return NotFound(ex.Message);
     }
   }
 }

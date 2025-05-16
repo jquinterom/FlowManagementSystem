@@ -55,19 +55,20 @@ public class FlowExecutionService(
       }
 
       await _executionRepository.UpdateExecutionAsync(
-          execution.ExecutionId,
+          execution.Id,
           Builders<FlowExecution>.Update
               .Set(e => e.Status, ExecutionStatus.Completed)
               .Set(e => e.EndTime, DateTime.UtcNow)
               .Set(e => e.FinalOutputs, context.CollectedOutputs));
 
-      return execution.ExecutionId;
+      _logger.LogInformation("Execution completed: {ExecutionId}", execution.Status.ToString());
+      return execution.Id;
     }
     catch (Exception ex)
     {
       _logger.LogError(ex, "Error executing flow {FlowId}", flowId);
       await _executionRepository.UpdateExecutionStatusAsync(
-          execution.ExecutionId,
+          execution.Id,
           ExecutionStatus.Failed);
       throw;
     }
@@ -102,7 +103,6 @@ public class FlowExecutionService(
       await _executionRepository.AddStepExecutionAsync(context.ExecutionId, stepExecution);
     }
   }
-
 
   private async Task<Dictionary<string, object>> ExecuteStep(Step step, ExecutionContext context)
   {
@@ -202,7 +202,12 @@ public class FlowExecutionService(
     }
   }
 
-
+  public async Task<FlowExecution> GetExecutionByIdAsync(Guid executionId)
+  {
+    var execution = await _executionRepository.GetByIdAsync(executionId);
+    _logger.LogInformation("Execution found: {ExecutionId}", execution?.Status);
+    return execution ?? throw new KeyNotFoundException("Execution not found");
+  }
 }
 
 public class ExecutionContext(Guid executionId)
