@@ -1,5 +1,5 @@
-using FlowManagement.API.Models;
 using FlowManagement.Core.Entities;
+using FlowManagement.Core.Models;
 using FlowManagement.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,19 +26,15 @@ public class StepController(IStepService stepService, ILogger<StepController> lo
   [HttpPost]
   public async Task<IActionResult> CreateStep([FromBody] CreateStepDto dto)
   {
-    var step = new Step
+    try
     {
-      Id = Guid.NewGuid(),
-      Code = dto.Code,
-      Name = dto.Name,
-      Description = dto.Description ?? string.Empty,
-      Order = dto.Order,
-      IsParallel = dto.IsParallel,
-      ActionType = dto.ActionType
-    };
+      Step step = await _stepService.CreateStepAsync(dto);
 
-    await _stepService.CreateStepAsync(step);
-
-    return CreatedAtAction(nameof(GetSteps), new { step.Id }, step);
+      return CreatedAtAction(nameof(GetSteps), new { step.Id }, step);
+    }
+    catch (KeyNotFoundException ex)
+    {
+      return BadRequest(ex.Message);
+    }
   }
 }

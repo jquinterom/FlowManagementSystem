@@ -110,13 +110,14 @@ public class FlowExecutionService(
 
     // 1. Validar inputs requeridos
     var missingInputs = step.Inputs
-        .Where(i => i.IsRequired && !context.CurrentInputs.ContainsKey(i.Field.Code))
+        .Where(i => i.IsRequired && !context.CurrentInputs.ContainsKey(i.FieldCode))
         .ToList();
+
 
     if (missingInputs.Count != 0)
     {
       throw new InvalidOperationException(
-          $"It is missing required inputs: {string.Join(", ", missingInputs.Select(i => i.Field.Code))}");
+          $"It is missing required inputs: {string.Join(", ", missingInputs.Select(i => i.FieldCode))}");
     }
 
     // 2. Ejecutar lógica del paso (ejemplo simplificado)
