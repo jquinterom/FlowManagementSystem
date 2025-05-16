@@ -5,7 +5,7 @@ namespace FlowManagement.API.Models;
 public class CreateFieldDto
 {
   [Required]
-  [RegularExpression(@"^F-\d{4}$", ErrorMessage = "The code must be in the format F-XXXX")]
+  [RegularExpression(@"^F-\d{4}$", ErrorMessage = "The field code must be in the format F-XXXX")]
   public string Code { get; set; }
 
   [Required]

@@ -1,4 +1,4 @@
-namespace FlowManagement.Core.Models
+namespace FlowManagement.Application.DTOs.Steps
 {
   public class UpdateStepDto
   {

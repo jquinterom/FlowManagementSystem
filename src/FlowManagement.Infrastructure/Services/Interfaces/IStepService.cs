@@ -1,5 +1,5 @@
+using FlowManagement.Application.DTOs.Steps;
 using FlowManagement.Core.Entities;
-using FlowManagement.Core.Models;
 
 namespace FlowManagement.Infrastructure.Services.Interfaces
 {

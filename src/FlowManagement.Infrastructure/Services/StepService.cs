@@ -1,6 +1,6 @@
 using FlowManagement.Core.Entities;
 using FlowManagement.Core.Interfaces;
-using FlowManagement.Core.Models;
+using FlowManagement.Application.DTOs.Steps;
 using FlowManagement.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 

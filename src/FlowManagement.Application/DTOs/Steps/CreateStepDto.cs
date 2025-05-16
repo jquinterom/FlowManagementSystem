@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using FlowManagement.Core.Entities;
 
-namespace FlowManagement.Core.Models
+namespace FlowManagement.Application.DTOs.Steps
 {
   public class CreateStepDto
   {
+    [Required]
+    [RegularExpression(@"^SP-\d{4}$", ErrorMessage = "The step code must be in the format SP-XXXX")]
     public required string Code { get; set; }
 
     public required string Name { get; set; }
@@ -23,12 +26,16 @@ namespace FlowManagement.Core.Models
 
   public class StepInputDto
   {
+    [Required]
+    [RegularExpression(@"^F-\d{4}$", ErrorMessage = "The field code must be in the format F-XXXX")]
     public string FieldCode { get; set; }
     public bool IsRequired { get; set; }
   }
 
   public class StepOutputDto
   {
+    [Required]
+    [RegularExpression(@"^F-\d{4}$", ErrorMessage = "The field code must be in the format F-XXXX")]
     public string FieldCode { get; set; }
   }
 }
