@@ -160,7 +160,7 @@ public class FlowExecutionService(
       if (!context.CollectedOutputs.ContainsKey(dependency.RequiredOutput))
       {
         throw new InvalidOperationException(
-            $"Dependencia no satisfecha: se requiere '{dependency.RequiredOutput}' del paso {dependency.StepId}");
+            $"Dependency not satisfied: required '{dependency.RequiredOutput}' from step {dependency.StepCode}");
       }
     }
   }

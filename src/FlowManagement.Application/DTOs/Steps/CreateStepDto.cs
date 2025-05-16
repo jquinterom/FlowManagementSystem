@@ -28,7 +28,7 @@ namespace FlowManagement.Application.DTOs.Steps
   {
     [Required]
     [RegularExpression(@"^F-\d{4}$", ErrorMessage = "The field code must be in the format F-XXXX")]
-    public string FieldCode { get; set; }
+    public required string FieldCode { get; set; }
     public bool IsRequired { get; set; }
   }
 
@@ -36,6 +36,6 @@ namespace FlowManagement.Application.DTOs.Steps
   {
     [Required]
     [RegularExpression(@"^F-\d{4}$", ErrorMessage = "The field code must be in the format F-XXXX")]
-    public string FieldCode { get; set; }
+    public required string FieldCode { get; set; }
   }
 }

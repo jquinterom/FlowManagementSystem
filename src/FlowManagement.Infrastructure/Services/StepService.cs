@@ -59,8 +59,8 @@ namespace FlowManagement.Infrastructure.Services
       var step = await _stepRepository.GetByIdAsync(stepId) ?? throw new KeyNotFoundException("Step not found");
 
       // Actualizar Inputs/Outputs
-      step.Inputs = dto.Inputs?.Select(i => new StepInput { /* ... */ }).ToList() ?? step.Inputs;
-      step.Outputs = dto.Outputs?.Select(o => new StepOutput { /* ... */ }).ToList() ?? step.Outputs;
+      // step.Inputs = dto.Inputs?.Select(i => new StepInput { /* ... */ }).ToList() ?? step.Inputs;
+      // step.Outputs = dto.Outputs?.Select(o => new StepOutput { /* ... */ }).ToList() ?? step.Outputs;
 
       await _stepRepository.UpdateAsync(step);
     }
