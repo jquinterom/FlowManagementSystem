@@ -15,7 +15,6 @@
 ```
 MONGODB_CONNECTION_STRING=mongodb://localhost:27017
 MONGODB_DATABASE_NAME=flow_management
-MONGODB_COLLECTION_NAME=flows
 ```
 
 4. Ejecutar el proyecto
